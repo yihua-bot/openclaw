@@ -3,20 +3,16 @@ FROM node:22-bookworm
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
-# Install dependencies (use npm as pnpm lock file doesn't exist)
-RUN if [ -f "package-lock.json" ]; then \
-      npm ci; \
-    else \
-      npm install; \
-    fi
+# Install pnpm and dependencies
+RUN corepack enable && pnpm install --frozen-lockfile
 
 # Copy source
 COPY . .
 
 # Build
-RUN npm run build
+RUN pnpm build
 
 EXPOSE 18789
 
